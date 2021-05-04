@@ -1,8 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 func main() {
-	p := newBoard()
-	fmt.Print(p.board)
+
+	game, err := NewGame()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(game.position.board.Draw())
+	fmt.Println(game.position)
 }
