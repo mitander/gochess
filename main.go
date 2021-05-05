@@ -12,6 +12,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(game.position.board.Draw())
-	fmt.Println(game.position)
+	for !game.isDone() {
+		fmt.Println(game.DrawBoard())
+		fmt.Println(game.Position.board.blackBishop.Draw())
+		game.Quit()
+	}
+
 }

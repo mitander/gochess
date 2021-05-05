@@ -3,7 +3,7 @@ package main
 type MoveTag uint16
 
 const (
-	KingSideCastle MoveTag = 1 << iota
+	KingSideCastle MoveTag = iota
 	QueenSideCastle
 	Capture
 	EnPassant

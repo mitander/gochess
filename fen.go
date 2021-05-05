@@ -53,7 +53,7 @@ func FEN(fen string) (*Position, error) {
 		board:        b,
 		turn:         turn,
 		castleStatus: castle,
-		ep:           sq,
+		enPassant:    sq,
 	}, nil
 }
 
@@ -63,9 +63,9 @@ func fenBoard(board string) (*Board, error) {
 		return nil, fmt.Errorf("fen - invalid board: %s", board)
 	}
 	m := map[Square]Piece{}
-	for i, rankStr := range ranks {
+	for i, str := range ranks {
 		rank := Rank(7 - i)
-		fileMap, err := fenRank(rankStr)
+		fileMap, err := fenRank(str)
 		if err != nil {
 			return nil, err
 		}
@@ -73,22 +73,36 @@ func fenBoard(board string) (*Board, error) {
 			m[getSquare(file, rank)] = piece
 		}
 	}
+	return NewBoard(m)
+}
 
-	b := &Board{}
-	for _, p1 := range pieceMap {
-		bm := map[Square]bool{}
-		for sq, p2 := range m {
-			if p1 == p2 {
-				bm[sq] = true
+func (b *Board) setBBForSquareUtil(m *Move) {
+	// Set bitboards for white, black and empty squares
+	b.whiteSqs = b.whiteKing | b.whiteQueen | b.whiteRook | b.whiteBishop | b.whiteKnight | b.whitePawn
+	b.blackSqs = b.blackKing | b.blackQueen | b.blackRook | b.blackBishop | b.blackKnight | b.blackPawn
+	b.emptySqs = ^(b.whiteSqs | b.blackSqs)
+
+	// Initialization of king square bitboards on nil Move
+	if m == nil {
+		b.whiteKingSq = NoSquare
+		b.blackKingSq = NoSquare
+
+		for i := 0; i < TotalSquares; i++ {
+			sq := Square(i)
+			// Set white king square
+			if b.whiteKing.Occupied(sq) {
+				b.whiteKingSq = sq
+				// Set black king square
+			} else if b.blackKing.Occupied(sq) {
+				b.blackKingSq = sq
 			}
 		}
-		bb, err := newBitboard(bm)
-		if err != nil {
-			return b, err
-		}
-		b.setBBForPiece(p1, bb)
+		// Update king square bitboards on king Move
+	} else if m.from == b.whiteKingSq {
+		b.whiteKingSq = m.to
+	} else if m.from == b.blackKingSq {
+		b.blackKingSq = m.to
 	}
-	return b, nil
 }
 
 func fenCastleStatus(castle string) (CastleStatus, error) {
@@ -108,7 +122,7 @@ func fenEnPassant(ep string) (Square, error) {
 		return NoSquare, nil
 	}
 	sq := strToSquareMap[ep]
-	if sq == NoSquare || !(sq.Rank() == Rank3 || sq.Rank() == Rank6) {
+	if sq == NoSquare || !(sq.GetRank() == Rank3 || sq.GetRank() == Rank6) {
 		return NoSquare, fmt.Errorf("fen: invalid En Passant square [%s]", ep)
 	}
 	return sq, nil

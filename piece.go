@@ -120,8 +120,7 @@ func (p Piece) Color() Color {
 	return NoColor
 }
 
-var pieceUnicodes = []string{" ", "♔", "♕", "♖", "♗", "♘", "♙", "♚", "♛", "♜", "♝", "♞", "♟"}
-
-func (p Piece) String() string {
-	return pieceUnicodes[int(p)]
+func (p Piece) Unicode() string {
+	uc := []string{" ", "♚", "♛", "♜", "♝", "♞", "♟", "♔", "♕", "♖", "♗", "♘", "♙"}
+	return uc[int(p)]
 }

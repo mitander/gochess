@@ -1,23 +1,23 @@
 package main
 
 type Board struct {
-	whiteKing       bitboard
-	whiteQueen      bitboard
-	whiteRook       bitboard
-	whiteBishop     bitboard
-	whiteKnight     bitboard
-	whitePawn       bitboard
-	blackKing       bitboard
-	blackQueen      bitboard
-	blackRook       bitboard
-	blackBishop     bitboard
-	blackKnight     bitboard
-	blackPawn       bitboard
-	whiteSquares    bitboard
-	blackSquares    bitboard
-	emptySquares    bitboard
-	whiteKingSquare Square
-	blackKingSquare Square
+	whiteKing   bitboard
+	whiteQueen  bitboard
+	whiteRook   bitboard
+	whiteBishop bitboard
+	whiteKnight bitboard
+	whitePawn   bitboard
+	blackKing   bitboard
+	blackQueen  bitboard
+	blackRook   bitboard
+	blackBishop bitboard
+	blackKnight bitboard
+	blackPawn   bitboard
+	whiteSqs    bitboard
+	blackSqs    bitboard
+	emptySqs    bitboard
+	whiteKingSq Square
+	blackKingSq Square
 }
 
 func NewBoard(m map[Square]Piece) (*Board, error) {
@@ -29,18 +29,19 @@ func NewBoard(m map[Square]Piece) (*Board, error) {
 				bm[sq] = true
 			}
 		}
-		bb, err := newBitboard(bm)
+		bb, err := NewBitboard(bm)
 		if err != nil {
 			return &Board{}, err
 		}
-		b.setBBForPiece(p1, bb)
+		b.setPieceBB(p1, bb)
 	}
+	b.setBBForSquareUtil(nil)
 	return b, nil
 }
 
 func (b *Board) Piece(sq Square) Piece {
 	for _, p := range pieceMap {
-		bb := b.bbForPiece(p)
+		bb := b.getPieceBB(p)
 		if bb.Occupied(sq) {
 			return p
 		}
@@ -49,7 +50,7 @@ func (b *Board) Piece(sq Square) Piece {
 }
 
 func (b *Board) Draw() string {
-	s := "\n A B C D E F G H\n"
+	s := "\n  A B C D E F G H\n"
 	for r := 7; r >= 0; r-- {
 		s += Rank(r).String()
 		for f := 0; f < TotalSquareRows; f++ {
@@ -57,7 +58,7 @@ func (b *Board) Draw() string {
 			if p == NoPiece {
 				s += "-"
 			} else {
-				s += p.String()
+				s += p.Unicode()
 			}
 			s += " "
 		}
@@ -66,7 +67,7 @@ func (b *Board) Draw() string {
 	return s
 }
 
-func (b *Board) bbForPiece(p Piece) bitboard {
+func (b *Board) getPieceBB(p Piece) bitboard {
 	switch p {
 	case WhiteKing:
 		return b.whiteKing
@@ -96,7 +97,7 @@ func (b *Board) bbForPiece(p Piece) bitboard {
 	return bitboard(0)
 }
 
-func (b *Board) setBBForPiece(p Piece, bb bitboard) {
+func (b *Board) setPieceBB(p Piece, bb bitboard) {
 	switch p {
 	case WhiteKing:
 		b.whiteKing = bb
