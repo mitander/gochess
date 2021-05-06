@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
 type MoveTag uint16
 
 const (
@@ -40,4 +45,22 @@ func (m *Move) addTag(tag MoveTag) {
 
 func (m *Move) String() string {
 	return m.from.String() + m.to.String() + m.promo.String()
+}
+
+func MakeMove(s string) (err error) {
+	_, err = StrToMove(s)
+	return err
+}
+
+func StrToMove(s string) (*Move, error) {
+	if len(s) != 5 {
+		return &Move{}, fmt.Errorf("invalid move length")
+	}
+	split := strings.Split(s, "-")
+	from := strToSquareMap[split[0]]
+	to := strToSquareMap[split[1]]
+	return &Move{
+		from: from,
+		to:   to,
+	}, nil
 }

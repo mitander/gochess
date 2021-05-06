@@ -135,6 +135,10 @@ func getSquare(f File, r Rank) Square {
 	return Square((int(r) * 8) + int(f))
 }
 
+func (s Square) GetRank() Rank {
+	return s.Rank()
+}
+
 func (f File) String() string {
 	files := "abcdefgh"
 	return files[f : f+1]

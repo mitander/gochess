@@ -50,7 +50,7 @@ func (b *Board) Piece(sq Square) Piece {
 }
 
 func (b *Board) Draw() string {
-	s := "\n  A B C D E F G H\n"
+	s := "  A B C D E F G H\n"
 	for r := 7; r >= 0; r-- {
 		s += Rank(r).String()
 		for f := 0; f < TotalSquareRows; f++ {

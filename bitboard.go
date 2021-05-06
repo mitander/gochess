@@ -28,7 +28,7 @@ func (b bitboard) Occupied(sq Square) bool {
 }
 
 func (b bitboard) Draw() string {
-	s := "\n  A B C D E F G H\n"
+	s := "  A B C D E F G H\n"
 	for r := 7; r >= 0; r-- {
 		s += Rank(r).String()
 		for f := 0; f < TotalSquareRows; f++ {
@@ -36,7 +36,7 @@ func (b bitboard) Draw() string {
 			if b.Occupied(sq) {
 				s += "1"
 			} else {
-				s += "0"
+				s += "-"
 			}
 			s += " "
 		}

@@ -35,11 +35,12 @@ type Game struct {
 	Status     Status
 }
 
-func NewGame() (*Game, error) {
-	pos, err := FEN(TestPosition)
+func NewGame(fen string) (*Game, error) {
+	pos, err := FEN(fen)
 	if err != nil {
 		return &Game{}, err
 	}
+
 	return &Game{
 		ValidMoves: []*Move{},
 		Position:   pos,
